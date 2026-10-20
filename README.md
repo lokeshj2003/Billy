@@ -123,9 +123,9 @@ npm run build
 ---
 
 ## 👥 Core Team & Acknowledgments
-- **Veerendragouda H** — Project Lead
-- **Lokesh J** — Technical Director & AI Engineer
-- **Sheetal Ramesh** — Research & Protocol Lead
-- **S Yeswanth Sai** — Community Safety Director
+- **Lokesh J**
+- **Veerendragouda H**
+- **Sheetal Ramesh**
+- **S Yeswanth Sai** 
 
 *Special thanks to Google's Generative AI team for Gemini, the React/Vite open-source community, and anti-bullying advocates worldwide.*
