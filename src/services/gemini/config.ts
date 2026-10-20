@@ -3,8 +3,8 @@ import { env } from '@/config/env';
 import { db } from '../firebase/client';
 
 export const GEMINI_API_KEY = env.geminiApiKey;
-// High-speed, lightweight production model for real-time conversational chat
-export const MODEL_NAME = 'gemini-3.5-flash-lite';
+// Ultra-fast Flash model optimized for free-tier quotas and low-latency replies
+export const MODEL_NAME = 'gemini-3.6-flash';
 
 let genAIInstance: GoogleGenerativeAI | null = null;
 

@@ -3,13 +3,12 @@ import { CHAT_PROMPTS } from './prompts';
 import { ChatResponse } from '@/types/chat';
 
 /**
- * Rapid instant distress rating heuristic (0ms latency).
- * Avoids firing redundant secondary LLM requests that cause minute-long delays.
+ * Fast 0ms local distress pattern scoring.
+ * Prevents redundant secondary API calls that exhaust free tier quotas.
  */
 function evaluateDistressScore(message: string): number {
   const lower = message.toLowerCase();
 
-  // Severe / Crisis keywords -> 9-10
   const critical = [
     'kill myself',
     'suicide',
@@ -23,7 +22,6 @@ function evaluateDistressScore(message: string): number {
   ];
   if (critical.some((w) => lower.includes(w))) return 10;
 
-  // High distress keywords -> 7-8
   const highDistress = [
     'terrified',
     'scared',
@@ -41,7 +39,6 @@ function evaluateDistressScore(message: string): number {
   ];
   if (highDistress.some((w) => lower.includes(w))) return 8;
 
-  // Medium distress keywords -> 5-6
   const medium = [
     'bully',
     'bullying',
@@ -58,7 +55,6 @@ function evaluateDistressScore(message: string): number {
   ];
   if (medium.some((w) => lower.includes(w))) return 6;
 
-  // Casual greeting or query -> 2
   return 2;
 }
 
@@ -83,6 +79,10 @@ export class ChatService {
       const model = genAI.getGenerativeModel({
         model: MODEL_NAME,
         systemInstruction: CHAT_PROMPTS.INITIAL_CONTEXT,
+        generationConfig: {
+          maxOutputTokens: 250, // Keeps generation lightweight and fast for free-tier quotas
+          temperature: 0.7,
+        },
       });
 
       this.chatSession = model.startChat({
@@ -107,17 +107,16 @@ export class ChatService {
       if (!this.chatSession) {
         return {
           message:
-            "I'm currently unable to connect to the AI service. Please check your Gemini API key in configuration, or reach out to support.",
+            "I'm currently unable to connect to the AI service. Please verify your Gemini API key in configuration, or reach out to support.",
           error: 'AI service unavailable',
         };
       }
 
-      // Single, direct chat request for fastest possible response time
+      // Single, direct chat request for fastest response time
       const result = await this.chatSession.sendMessage(message);
       const response = await result.response;
       const text = response.text();
 
-      // Instant local distress scoring without network delay
       const distressScore = evaluateDistressScore(message);
 
       return {
@@ -128,8 +127,8 @@ export class ChatService {
       console.error('[ChatService Error]:', error);
       return {
         message:
-          "I hear you, and I want to support you. It looks like our connection was momentarily delayed. Please feel free to send your message again, or use the email report option below to send details directly to our safety team.",
-        error: error instanceof Error ? error.message : 'Unknown communication error',
+          "I hear you, and I want to support you. It looks like the connection had a slight hiccup. Please try sending your message again, or use the email report option below to send details directly to our safety team.",
+        error: error instanceof Error ? error.message : 'Communication error',
         distressScore: evaluateDistressScore(message),
       };
     }
