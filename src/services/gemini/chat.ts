@@ -22,20 +22,11 @@ export class ChatService {
       const genAI = getGenAI();
       const model = genAI.getGenerativeModel({
         model: MODEL_NAME,
+        systemInstruction: CHAT_PROMPTS.INITIAL_CONTEXT,
       });
 
       this.chatSession = model.startChat({
-        history: [
-          {
-            role: 'user',
-            parts: CHAT_PROMPTS.INITIAL_CONTEXT,
-          },
-          {
-            role: 'model',
-            parts:
-              'Understood. I am Billy, an empathetic AI assistant dedicated to providing safe, trauma-informed cyberbullying prevention and victim support.',
-          },
-        ],
+        history: [],
       });
     } catch (err) {
       console.error('[ChatService] Failed to initialize chat session:', err);
