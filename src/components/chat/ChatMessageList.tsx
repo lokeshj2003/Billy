@@ -15,14 +15,23 @@ export const ChatMessageList: React.FC<Props> = ({
   isLoading,
   error,
 }) => {
-  const bottomRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
+  // Auto-scroll ONLY the chat box contents to bottom, never jumping the window/page
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (containerRef.current) {
+      containerRef.current.scrollTo({
+        top: containerRef.current.scrollHeight,
+        behavior: 'smooth',
+      });
+    }
   }, [messages, isLoading]);
 
   return (
-    <div className="flex-1 p-4 md:p-6 overflow-y-auto space-y-4 bg-gradient-to-b from-indigo-50/40 via-white to-white">
+    <div
+      ref={containerRef}
+      className="flex-1 p-4 md:p-6 overflow-y-auto space-y-4 bg-gradient-to-b from-indigo-50/40 via-white to-white scroll-smooth"
+    >
       <AnimatePresence initial={false}>
         {messages.map((message, idx) => {
           const isUser = message.role === 'user';
@@ -113,8 +122,6 @@ export const ChatMessageList: React.FC<Props> = ({
           {error}
         </div>
       )}
-
-      <div ref={bottomRef} />
     </div>
   );
 };
