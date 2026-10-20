@@ -2,6 +2,66 @@ import { getGenAI, MODEL_NAME } from './config';
 import { CHAT_PROMPTS } from './prompts';
 import { ChatResponse } from '@/types/chat';
 
+/**
+ * Rapid instant distress rating heuristic (0ms latency).
+ * Avoids firing redundant secondary LLM requests that cause minute-long delays.
+ */
+function evaluateDistressScore(message: string): number {
+  const lower = message.toLowerCase();
+
+  // Severe / Crisis keywords -> 9-10
+  const critical = [
+    'kill myself',
+    'suicide',
+    'want to die',
+    'end my life',
+    'self harm',
+    'harm myself',
+    'cant take this anymore',
+    'cant go on',
+    'threatened to kill',
+  ];
+  if (critical.some((w) => lower.includes(w))) return 10;
+
+  // High distress keywords -> 7-8
+  const highDistress = [
+    'terrified',
+    'scared',
+    'stalking',
+    'stalked',
+    'blackmail',
+    'blackmailing',
+    'leaked my',
+    'doxxed',
+    'doxing',
+    'harassing me every day',
+    'cant stop crying',
+    'afraid',
+    'threat',
+  ];
+  if (highDistress.some((w) => lower.includes(w))) return 8;
+
+  // Medium distress keywords -> 5-6
+  const medium = [
+    'bully',
+    'bullying',
+    'mean',
+    'hate',
+    'ugly',
+    'stupid',
+    'rumors',
+    'blocked',
+    'calling me names',
+    'group chat',
+    'insult',
+    'embarrassed',
+  ];
+  if (medium.some((w) => lower.includes(w))) return 6;
+
+  // Casual greeting or query -> 2
+  return 2;
+}
+
 export class ChatService {
   private static instance: ChatService;
   private chatSession: any = null;
@@ -52,12 +112,13 @@ export class ChatService {
         };
       }
 
+      // Single, direct chat request for fastest possible response time
       const result = await this.chatSession.sendMessage(message);
       const response = await result.response;
       const text = response.text();
 
-      // Analyze sentiment asynchronously
-      const distressScore = await this.analyzeMessageSentiment(message);
+      // Instant local distress scoring without network delay
+      const distressScore = evaluateDistressScore(message);
 
       return {
         message: text,
@@ -67,28 +128,10 @@ export class ChatService {
       console.error('[ChatService Error]:', error);
       return {
         message:
-          "I hear you, and I want to help, but I'm having trouble processing your message right now. Please try again in a moment, or consider downloading this chat log to share with a counselor.",
+          "I hear you, and I want to support you. It looks like our connection was momentarily delayed. Please feel free to send your message again, or use the email report option below to send details directly to our safety team.",
         error: error instanceof Error ? error.message : 'Unknown communication error',
+        distressScore: evaluateDistressScore(message),
       };
-    }
-  }
-
-  public async analyzeMessageSentiment(message: string): Promise<number> {
-    try {
-      const genAI = getGenAI();
-      const model = genAI.getGenerativeModel({ model: MODEL_NAME });
-      const prompt = `Analyze the following message from a user seeking cyberbullying support.
-Rate their distress/urgency on a scale from 1 (neutral/calm inquiry) to 10 (immediate threat of harm or severe crisis).
-Return ONLY the single integer between 1 and 10.
-Message: "${message.slice(0, 500)}"`;
-
-      const result = await model.generateContent(prompt);
-      const response = await result.response;
-      const score = parseInt(response.text().trim(), 10);
-      return isNaN(score) ? 5 : Math.max(1, Math.min(10, score));
-    } catch (error) {
-      console.warn('[ChatService] Sentiment analysis skipped:', error);
-      return 5;
     }
   }
 }
