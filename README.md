@@ -1,139 +1,131 @@
 # Billy - AI-Powered Cyberbullying Prevention Platform
 
-Billy is a cutting-edge platform that leverages artificial intelligence to prevent cyberbullying and create safer digital spaces. The platform provides real-time support, threat detection, and a supportive community environment.
+Billy is an intelligent, trauma-informed platform leveraging artificial intelligence to prevent cyberbullying, provide real-time emotional support, extract evidence from screenshots, and create safe digital spaces.
 
-## 🚀 Features
+---
 
-- **AI-Powered Analysis**: Advanced machine learning for real-time cyberbullying detection
-- **Secure Reporting**: Anonymous and encrypted reporting system
-- **24/7 Support**: Immediate AI-driven assistance through chat
-- **Community Support**: Moderated space for sharing experiences
-- **Smart Alerts**: Real-time notification system for potential threats
-- **Privacy-First**: End-to-end encryption and anonymous reporting options
+## 🚀 Key Features
 
-## 🛠️ Tech Stack
+- **AI-Powered Cyberbullying Detection & Support**: Real-time conversational AI trained to provide empathetic, trauma-informed assistance using Google's Gemini models.
+- **Multimodal Evidence Analysis (OCR)**: Victims can upload screenshots of abusive messages; Billy parses timestamps, handles, and abusive text automatically.
+- **Emergency Escalation & Email Dispatch**: Encrypted and structured incident reporting dispatched to safety counselors and response teams via EmailJS.
+- **Incident Transcript Export**: Forensic-ready download of logged chat sessions and distress indexes.
+- **Anonymous Reporting**: Complete pseudonymity option to preserve victim privacy and comfort.
+- **Telemetry & Transparency Dashboard**: Visualized analytics tracking incident trends, severity distributions, and case resolution rates.
+- **Community Leaders Directory**: Connecting victims with peer mentors, researchers, and digital safety advocates.
 
-- **Frontend**: React + TypeScript + Vite
-- **Styling**: Tailwind CSS
-- **Animation**: Framer Motion
-- **Icons**: Lucide React
-- **AI Integration**: Google's Generative AI (Gemini)
-- **Backend**: Node.js + Express
-- **Database**: MongoDB with Mongoose
-- **Authentication**: JWT
-- **Email**: Nodemailer
-- **SMS**: Twilio
+---
 
-## 📁 Project Structure
+## 🛠️ Architecture & Tech Stack
+
+| Layer | Technologies |
+| :--- | :--- |
+| **Frontend Framework** | React 18, TypeScript, Vite |
+| **Routing & Code-Splitting** | React Router DOM v6 with `React.lazy` and `Suspense` |
+| **Design System & UI** | Tailwind CSS, Radix UI primitives, Lucide Icons, Tremor Charts |
+| **Animations** | Framer Motion |
+| **Artificial Intelligence** | Google Generative AI (`@google/generative-ai` with `gemini-1.5-flash`) |
+| **Session & Cloud Storage** | Firebase Firestore |
+| **Incident Escalation** | EmailJS Client SDK |
+| **Code Quality & Typing** | Strict TypeScript (`tsc -b`), ESLint |
+
+---
+
+## 📁 Refactored Project Structure
 
 ```
 billy-cyberbullying-platform/
+├── public/                     # Static assets & team photos
+│   └── team/                  # Verified leadership portraits
 ├── src/
-│   ├── components/           # Reusable UI components
-│   │   ├── background/      # Background effects components
-│   │   ├── community/       # Community section components
-│   │   ├── home/           # Home page components
-│   │   └── hero/           # Hero section components
-│   ├── pages/              # Page components
-│   ├── services/           # API and external services
-│   │   ├── api/           # REST API services
-│   │   └── gemini/        # AI chat integration
-│   ├── styles/            # Global styles and theme
-│   ├── types/             # TypeScript type definitions
-│   └── utils/             # Utility functions
-├── server/                # Backend server
-│   ├── config/           # Server configuration
-│   ├── models/           # MongoDB models
-│   ├── routes/           # API routes
-│   ├── services/         # Business logic
-│   └── utils/            # Server utilities
-└── public/               # Static assets
+│   ├── config/                # Environment validation & app configuration
+│   │   └── env.ts
+│   ├── types/                 # Centralized domain TypeScript contracts
+│   │   ├── chat.ts            # Chat, message, and profile types
+│   │   ├── report.ts          # Incident report and escalation payloads
+│   │   ├── statistics.ts      # Analytics KPI and table models
+│   │   └── community.ts       # Peer leader profiles
+│   ├── services/              # Domain-driven service layer
+│   │   ├── gemini/            # AI chat & vision OCR services
+│   │   ├── firebase/          # Firestore user profile & session logging
+│   │   ├── email/             # EmailJS reporting client
+│   │   └── api/               # Backend REST API client & SMS verification
+│   ├── hooks/                 # Custom React hooks (useChat, useUserProfile)
+│   ├── components/
+│   │   ├── chat/              # Chatbot orchestrator, input, message stream, modals
+│   │   ├── home/              # Hero, emergency banner, features
+│   │   ├── community/         # Peer profile grid & interactive cards
+│   │   ├── layout/            # Navbar, footer with crisis lifelines
+│   │   ├── common/            # ErrorBoundary, LoadingSpinner
+│   │   └── ui/                # Accessible Radix UI components
+│   ├── pages/                 # Lazy-loaded route pages
+│   │   ├── Home.tsx
+│   │   ├── Chat.tsx
+│   │   ├── Community.tsx
+│   │   ├── Statistics.tsx
+│   │   └── NotFound.tsx
+│   ├── App.tsx                # App entry with route code-splitting & error boundaries
+│   └── main.tsx
+├── .env.example               # Developer environment documentation
+├── vite.config.ts             # Rollup chunk optimization & path aliases (@/*)
+└── package.json
 ```
 
-## 🚀 Getting Started
+---
 
-### Prerequisites
+## ⚙️ Getting Started
 
-- Node.js (v18 or higher)
-- npm or yarn
-- MongoDB (v4.4 or higher)
-- Gemini API key
-- Twilio account (for SMS)
-- SMTP server (for email)
+### 1. Prerequisites
+- **Node.js**: v18.0.0 or higher
+- **npm** or **yarn**
+- **Google Gemini API Key**: [Google AI Studio](https://aistudio.google.com/)
+- **EmailJS Account**: [EmailJS](https://www.emailjs.com/) (for incident dispatch)
 
+### 2. Environment Setup
+Copy `.env.example` to `.env` and fill in your keys:
 
+```bash
+cp .env.example .env
+```
 
-### Project Setup
+Ensure the following keys are present:
+```ini
+VITE_GEMINI_API_KEY=your_gemini_api_key
+VITE_FIREBASE_API_KEY=your_firebase_api_key
+VITE_EMAILJS_PUBLIC_KEY=your_emailjs_public_key
+VITE_EMAILJS_SERVICE_ID=your_emailjs_service_id
+VITE_EMAILJS_TEMPLATE_ID=your_emailjs_template_id
+```
 
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/your-username/billy-cyberbullying-platform.git
-   cd billy-cyberbullying-platform
-   ```
+### 3. Install & Run
+```bash
+# Install dependencies
+npm install
 
-2. **Install dependencies**:
-   
-   on vs-code open terminal and select cmd if any error
-   # To Install frontend dependencies type the following
-   1. npm install
-   2. npm run dev
-   # Install backend dependencies
-   cd server
-   
-   
+# Run development server
+npm run dev
 
+# Run strict TypeScript typecheck
+npm run typecheck
 
-3. **Access the application**:
-   - Frontend: `http://localhost:5173`
-   - Backend API: `http://localhost:5000`
+# Production build with chunking
+npm run build
+```
 
+---
 
+## 🛡️ Security & Privacy Standards
+- **Zero Exposed Secrets**: Leaked database connection strings have been purged from client bundles.
+- **Client-Side Validation**: All environment configurations are validated at startup to avoid runtime failures.
+- **Trauma-Informed Safeguards**: High distress inquiries trigger emergency helpline banners and priority support tags.
+- **Forensic Report Integrity**: Transcripts record timestamps and incident details for formal school or legal filing.
 
-## 🔒 Security Features
+---
 
-- End-to-end encryption for chat messages
-- Anonymous reporting system
-- Secure file upload handling
-- JWT authentication
-- Rate limiting
-- Input validation and sanitization
+## 👥 Core Team & Acknowledgments
+- **Veerendragouda H** — Project Lead
+- **Lokesh J** — Technical Director & AI Engineer
+- **Sheetal Ramesh** — Research & Protocol Lead
+- **S Yeswanth Sai** — Community Safety Director
 
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create your feature branch: `git checkout -b feature/AmazingFeature`
-3. Commit your changes: `git commit -m 'Add some AmazingFeature'`
-4. Push to the branch: `git push origin feature/AmazingFeature`
-5. Open a pull request
-
-## 📝 Code Style Guidelines
-
-- Use TypeScript for type safety
-- Follow ESLint configuration
-- Write meaningful commit messages
-- Document complex functions and components
-- Create small, focused components
-- Extract reusable logic into hooks or utilities
-- Use proper naming conventions
-- Maintain consistent file structure
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 👥 Team
-
-- **Veerendragouda H** 
-- **Lokesh J** 
-- **Sheetal Ramesh** 
-- **S Yeswanth Sai** 
-
-## 🙏 Acknowledgments
-
-- Google's Generative AI team for Gemini
-- The React and Vite communities
-- All contributors and supporters
-
-## 📞 Support
-
-For support, email lokesh.j.kurubarahalli.121@gmail.com.
+*Special thanks to Google's Generative AI team for Gemini, the React/Vite open-source community, and anti-bullying advocates worldwide.*
