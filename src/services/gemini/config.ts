@@ -3,7 +3,8 @@ import { env } from '@/config/env';
 import { db } from '../firebase/client';
 
 export const GEMINI_API_KEY = env.geminiApiKey;
-export const MODEL_NAME = 'gemini-1.5-flash';
+// Using current production model for Google Generative AI
+export const MODEL_NAME = 'gemini-3.8-flash';
 
 let genAIInstance: GoogleGenerativeAI | null = null;
 
